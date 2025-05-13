@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Online Railway Ticket Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #4CAF50, #2196F3);
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+    .container {
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      margin: 50px auto;
+      text-align: center;
+      color: black;
+    }
+    h2 {
+      color: #333;
+    }
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background: #ff5722;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+      width: 100%;
+    }
+    button:hover {
+      background: #e64a19;
+    }
+    .hidden {
+      display: none;
+    }
+    .train-img {
+      width: 100%;
+      max-width: 400px;
+      max-height: 300px;
+      object-fit: contain;
+    }
+    .download-btn {
+      background: #4CAF50;
+      margin-top: 10px;
+    }
+    #selectedTrainType {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+      color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="container">
+  <h2>Railway Ticket Booking</h2>
+  <img src="i.jpg.png" alt="Train Image" class="train-img">
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Enter Username" required>
+    <input type="password" id="password" placeholder="Enter Password" required
+      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}" 
+      title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character">
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<!-- Dashboard Page -->
+<div id="dashboardPage" class="container hidden">
+  <h2>Welcome to Railway Booking</h2>
+  <img src="p.jpg.png" alt="Train Dashboard" class="train-img">
+  <p>Select your train and book tickets easily.</p>
+  <button onclick="goToPage('trainSelectionPage')">Start Booking</button>
+</div>
+
+<!-- Train Selection Page -->
+<div id="trainSelectionPage" class="container hidden">
+  <h2>Select Train</h2>
+  <img id="trainImage" src="im.jpg.png" alt="Train Station" class="train-img">
+  <select id="trainSelect" onchange="updateTrainImage()" required>
+    <option value="default">Select Train</option>
+    <option value="express">Express Train</option>
+    <option value="superfast">Superfast Train</option>
+    <option value="luxury">Luxury Train</option>
+  </select>
+  <button onclick="proceedToPassengerPage()">Next</button>
+</div>
+
+<!-- Passenger Details Page -->
+<div id="passengerDetailsPage" class="container hidden">
+  <h2>Enter Passenger Details</h2>
+  <span id="selectedTrainType"></span>
+  <input type="text" id="passengerName" placeholder="Passenger Name" required>
+  <input type="number" id="passengerAge" placeholder="Age" required>
+  <select id="fromStation" onchange="setDefaultTimes()" required>
+    <option value="">From Station</option>
+    <option>Chennai</option>
+    <option>Coimbatore</option>
+    <option>Madurai</option>
+    <option>Salem</option>
+    <option>Erode</option>
+    <option>Trichy</option>
+    <option>Thanjavur</option>
+    <option>Vellore</option>
+  </select>
+  <select id="toStation" onchange="setDefaultTimes()" required>
+    <option value="">To Station</option>
+    <option>Chennai</option>
+    <option>Coimbatore</option>
+    <option>Madurai</option>
+    <option>Salem</option>
+    <option>Erode</option>
+    <option>Trichy</option>
+    <option>Thanjavur</option>
+    <option>Vellore</option>
+  </select>
+  <input type="date" id="journeyDate" required>
+  <select id="trainNumber" required>
+    <option value="">Select Train Number</option>
+    <option value="12345">12345 - Express</option>
+    <option value="67890">67890 - Superfast</option>
+    <option value="54321">54321 - Luxury</option>
+    <option value="98765">98765 - Shatabdi</option>
+  </select>
+  <select id="class" required>
+    <option value="">Select Class</option>
+    <option value="first">First Class</option>
+    <option value="second">Second Class</option>
+    <option value="sleeper">Sleeper</option>
+    <option value="ac">AC Class</option>
+  </select>
+  <input type="text" id="carriage" placeholder="Carriage" required>
+  <select id="seatSelect" required>
+    <option value="">Select Seat</option>
+    <option>A1</option>
+    <option>A2</option>
+    <option>B1</option>
+    <option>B2</option>
+    <option>C1</option>
+    <option>C2</option>
+    <option>D1</option>
+    <option>D2</option>
+  </select>
+  <input type="text" id="departure" placeholder="Departure Time" required>
+  <input type="text" id="arrival" placeholder="Arrival Time" required>
+  <button onclick="validatePassengerDetails()">Proceed</button>
+</div>
+
+<!-- Payment Page -->
+<div id="paymentPage" class="container hidden">
+  <h2>Payment</h2>
+  <p>Choose Payment Method:</p>
+  <select id="paymentMethod" required>
+    <option value="">Select Method</option>
+    <option>Credit Card</option>
+    <option>Debit Card</option>
+    <option>UPI</option>
+    <option>Net Banking</option>
+  </select>
+  <button onclick="confirmPayment()">Confirm Booking</button>
+</div>
+
+<!-- Confirmation Page -->
+<div id="confirmationPage" class="container hidden">
+  <h2>Booking Confirmed ✅</h2>
+  <canvas id="ticketCanvas" width="400" height="300"></canvas>
+  <button onclick="goToPage('dashboardPage')">Back to Home</button><br>
+  <button class="download-btn" onclick="downloadTicket()">Download Ticket</button>
+</div>
+
+<script>
+  function goToPage(pageId) {
+    document.querySelectorAll('.container').forEach(page => page.classList.add('hidden'));
+    document.getElementById(pageId).classList.remove('hidden');
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const passwordInput = document.getElementById("password");
+    if (passwordInput.checkValidity()) {
+      goToPage('dashboardPage');
+    } else {
+      alert(passwordInput.title);
+    }
+  });
+
+  function updateTrainImage() {
+    const trainSelect = document.getElementById("trainSelect").value;
+    const trainImage = document.getElementById("trainImage");
+
+    const imageUrls = {
+      "express": "im.jpg.png",
+      "superfast": "superfast.jpg.png",
+      "luxury": "luxury.jpg.png",
+      "default": "im.jpg.png"
+    };
+
+    trainImage.src = imageUrls[trainSelect] || imageUrls["default"];
+  }
+
+  function proceedToPassengerPage() {
+    const trainType = document.getElementById("trainSelect").value;
+    if (trainType === "default") {
+      alert("Please select a train.");
+      return;
+    }
+    document.getElementById("selectedTrainType").innerText = "Train Type: " + capitalizeFirstLetter(trainType);
+    goToPage('passengerDetailsPage');
+  }
+
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function validatePassengerDetails() {
+    const requiredFields = [
+      "passengerName", "passengerAge", "fromStation", "toStation",
+      "journeyDate", "trainNumber", "class", "carriage",
+      "seatSelect", "departure", "arrival"
+    ];
+    let allFilled = requiredFields.every(id => {
+      const el = document.getElementById(id);
+      return el && el.value.trim() !== "";
+    });
+
+    if (allFilled) {
+      goToPage('paymentPage');
+    } else {
+      alert("Please fill in all passenger details before proceeding.");
+    }
+  }
+
+  function confirmPayment() {
+    if (document.getElementById('paymentMethod').value !== "") {
+      generateTicketImage();
+      goToPage('confirmationPage');
+    } else {
+      alert("Please select a payment method.");
+    }
+  }
+
+  function setDefaultTimes() {
+    const from = document.getElementById("fromStation").value;
+    const to = document.getElementById("toStation").value;
+    const dep = document.getElementById("departure");
+    const arr = document.getElementById("arrival");
+
+    if (from === "Chennai" && to === "Coimbatore") {
+      dep.value = "08:00 AM";
+      arr.value = "12:00 PM";
+    } else if (from === "Chennai" && to === "Madurai") {
+      dep.value = "07:00 AM";
+      arr.value = "11:00 AM";
+    } else if (from === "Coimbatore" && to === "Madurai") {
+      dep.value = "09:00 AM";
+      arr.value = "01:00 PM";
+    } else if (from === "Chennai" && to === "Salem") {
+      dep.value = "10:00 AM";
+      arr.value = "02:00 PM";
+    } else {
+      dep.value = "";
+      arr.value = "";
+    }
+  }
+
+  function generateTicketImage() {
+    const canvas = document.getElementById("ticketCanvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "black";
+      ctx.font = "14px Arial";
+      ctx.fillText("Name: " + document.getElementById("passengerName").value, 20, 30);
+      ctx.fillText("From: " + document.getElementById("fromStation").value, 20, 50);
+      ctx.fillText("To: " + document.getElementById("toStation").value, 20, 70);
+      ctx.fillText("Date: " + document.getElementById("journeyDate").value, 20, 90);
+      ctx.fillText("Seat: " + document.getElementById("seatSelect").value, 20, 110);
+      ctx.fillText("Class: " + document.getElementById("class").value, 20, 130);
+      ctx.fillText("Departure: " + document.getElementById("departure").value, 20, 150);
+      ctx.fillText("Arrival: " + document.getElementById("arrival").value, 20, 170);
+    };
+    img.src = "tic.jpg.png.png"; // Use relative path
+  }
+
+  function downloadTicket() {
+    const canvas = document.getElementById('ticketCanvas');
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'ticket.jpg.png.png';
+    link.click();
+  }
+</script>
+
+</body>
+</html>
